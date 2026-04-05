@@ -22,7 +22,7 @@ export default async function handler(req, res) {
             },
             printQRInTerminal: false,
             logger: pino({ level: "fatal" }),
-            browser: ["Mac OS", "Chrome", "20.0.04"],
+            browser: ['Mac OS', 'Safari', '10.15.7'],
         });
 
         if (!sock.authState.creds.registered) {
