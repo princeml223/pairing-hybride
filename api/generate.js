@@ -27,29 +27,26 @@ module.exports = async (req, res) => {
             version,
             auth: {
                 creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
+                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" })),
             },
             printQRInTerminal: false,
-            logger: pino({ level: "silent" }),
-            // 💻 RETOUR À TA CONFIG INITIALE
+            logger: pino({ level: "fatal" }),
             browser: ['Mac OS', 'Safari', '10.15.7'], 
-            syncFullHistory: false,
+            syncFullHistory: false, // OBLIGATOIRE pour gagner du temps
+            qrTimeout: 20000,
+            connectTimeoutMs: 30000,
         });
 
-        // --- GÉNÉRATION DU CODE ---
+        // --- GÉNÉRATION ULTRA-RAPIDE ---
         if (!sock.authState.creds.registered) {
-            // Petit délai pour laisser le socket respirer sur Vercel
-            await delay(3500); 
+            // On réduit le délai à 2s pour laisser plus de temps à l'utilisateur
+            await delay(2000); 
             
-            try {
-                const code = await sock.requestPairingCode(targetNumber);
-                const formattedCode = code?.match(/.{1,4}/g)?.join("-") || code;
-                
-                if (!res.headersSent) {
-                    return res.status(200).json({ code: formattedCode });
-                }
-            } catch (err) {
-                if (!res.headersSent) return res.status(500).json({ error: "WhatsApp a refusé la liaison." });
+            const code = await sock.requestPairingCode(targetNumber);
+            const formattedCode = code?.match(/.{1,4}/g)?.join("-") || code;
+            
+            if (!res.headersSent) {
+                res.status(200).json({ code: formattedCode });
             }
         }
 
@@ -59,8 +56,7 @@ module.exports = async (req, res) => {
             const { connection } = s;
 
             if (connection === "open") {
-                await delay(6000); // Synchro
-
+                // Dès que c'est ouvert, on extrait l'ID sans attendre la synchro lourde
                 try {
                     const credsData = fs.readFileSync(`${sessionDir}/creds.json`, 'utf-8');
                     const params = new URLSearchParams();
@@ -76,17 +72,17 @@ module.exports = async (req, res) => {
 
                     await sock.sendMessage(targetNumber + '@s.whatsapp.net', { 
                         image: { url: "https://files.catbox.moe/szt37y.jpg" },
-                        caption: `🚀 *ⲎⲨⲂꞄⲒⲆⲈ-ⲘⲆ CONNECTÉ*\n\n*ID:* \`${sessionID}\`\n\n_Browser: Mac OS (Safari)_` 
+                        caption: `🚀 *ⲎⲨⲂꞄⲒⲆⲈ-ⲘⲆ CONNECTÉ*\n\n*ID:* \`${sessionID}\`` 
                     });
 
-                } catch (e) { console.log("Erreur de sauvegarde"); }
+                } catch (e) { console.log("Erreur synchro rapide"); }
 
-                await delay(2000);
-                if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true });
+                // Nettoyage express
+                if (fs.existsSync(sessionDir)) fs.removeSync(sessionDir, { recursive: true });
             }
         });
 
     } catch (err) {
-        if (!res.headersSent) res.status(500).json({ error: "Erreur Serveur" });
+        if (!res.headersSent) res.status(500).json({ error: "Réessayez plus vite" });
     }
 };
