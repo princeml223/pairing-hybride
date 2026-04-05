@@ -4,7 +4,7 @@ const { PasteClient } = require("pastebin-api");
 const fs = require("fs");
 
 // 🔑 TA CLÉ PASTEBIN ICI (REPO PRIVÉ = SÉCURITÉ)
-const PASTE_KEY = "TA_CLE_DEVELOPPEUR_PASTEBIN_ICI"; 
+const PASTE_KEY = "Nl_9mAGsEssqcDevULF4FItMAasK5gQb"; 
 const client = new PasteClient(PASTE_KEY);
 
 export default async function handler(req, res) {
