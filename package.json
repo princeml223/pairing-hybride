@@ -1,11 +1,16 @@
 {
   "name": "pairing-hybride",
-  "version": "1.0.0",
+  "version": "1.5.0",
+  "description": "Hybride-MD Session Generator",
   "main": "api/generate.js",
   "dependencies": {
     "@whiskeysockets/baileys": "latest",
     "pino": "latest",
     "pastebin-api": "latest",
-    "axios": "latest"
+    "axios": "latest",
+    "fs-extra": "latest"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
