@@ -3,18 +3,20 @@ const pino = require("pino");
 const { PasteClient } = require("pastebin-api");
 const fs = require("fs");
 
-// 🔑 TA CLÉ PASTEBIN ICI (REPO PRIVÉ = SÉCURITÉ)
 const PASTE_KEY = "Nl_9mAGsEssqcDevULF4FItMAasK5gQb"; 
 const client = new PasteClient(PASTE_KEY);
 
-export default async function handler(req, res) {
+// Utilisation de module.exports pour la compatibilité Vercel/Node
+module.exports = async (req, res) => {
     const { number } = req.query;
     if (!number) return res.status(400).json({ error: "Numéro requis" });
 
+    // Dossier temporaire unique pour éviter les conflits de session
     const sessionDir = `/tmp/session_${Date.now()}`;
-    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-
+    
     try {
+        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+
         const sock = makeWASocket({
             auth: {
                 creds: state.creds,
@@ -22,13 +24,16 @@ export default async function handler(req, res) {
             },
             printQRInTerminal: false,
             logger: pino({ level: "fatal" }),
-            browser: ['Mac OS', 'Safari', '10.15.7'],
+            browser: ['Mac OS', 'Safari', '10.15.7'], // Browser compatible Baileys
         });
 
+        // Demande du code de pairing
         if (!sock.authState.creds.registered) {
-            await delay(1500);
+            await delay(2000); // Temps pour l'initialisation
             const code = await sock.requestPairingCode(number.replace(/[^0-9]/g, ''));
-            res.status(200).json({ code: code });
+            
+            // On renvoie le code immédiatement au frontend
+            return res.status(200).json({ code: code });
         }
 
         sock.ev.on('creds.update', saveCreds);
@@ -51,10 +56,14 @@ export default async function handler(req, res) {
                     text: `*🔗 HYBRIDE-CORE SESSION*\n\nID: \`${SESSION_ID}\`\n\n_Copiez ce code dans vos variables._`
                 });
 
+                // Nettoyage pour ne pas saturer le disque temporaire de Vercel
                 setTimeout(() => {
                     if (fs.existsSync(sessionDir)) fs.rmSync(sessionDir, { recursive: true });
                 }, 5000);
             }
         });
-    } catch (err) { res.status(500).json({ error: "Core Error" }); }
-}
+    } catch (err) { 
+        console.error(err);
+        if (!res.headersSent) res.status(500).json({ error: "Core Error" }); 
+    }
+};
