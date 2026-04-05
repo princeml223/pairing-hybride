@@ -1,91 +1,141 @@
+const express = require('express');
+const { 
+    default: makeWASocket, 
+    useMultiFileAuthState, 
+    delay, 
+    makeCacheableSignalKeyStore, 
+    fetchLatestBaileysVersion
+} = require("@whiskeysockets/baileys");
 const pino = require("pino");
 const fs = require("fs-extra");
+const path = require("path");
 const axios = require("axios");
 
-const PASTE_KEY = "Nl_9mAGsEssqcDevULF4FItMAasK5gQb";
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-module.exports = async (req, res) => {
-    const { number } = req.query;
-    if (!number) return res.status(400).json({ error: "Numéro requis" });
+// Stockage temporaire de l'ID pour l'affichage web
+let lastSessionID = null; 
 
-    const targetNumber = number.replace(/[^0-9]/g, '');
-    const sessionDir = `/tmp/session_${targetNumber}`;
+app.use(express.static('public'));
+
+// Route de vérification pour ton interface HTML
+app.get('/check-session', (req, res) => {
+    res.json({ sessionID: lastSessionID });
+});
+
+app.get('/session', async (req, res) => {
+    let num = req.query.number;
+    if (!num) return res.status(400).send({ error: "Numéro requis (ex: 223xxxx)" });
+
+    const targetNumber = num.replace(/[^0-9]/g, '');
+    const sessionDir = path.join(__dirname, 'sessions', 'temp_' + Date.now());
+    lastSessionID = null; 
+
+    let codeSent = false;
+    let sessionGenerated = false;
 
     try {
-        const { 
-            default: makeWASocket, 
-            useMultiFileAuthState, 
-            delay, 
-            makeCacheableSignalKeyStore, 
-            fetchLatestBaileysVersion,
-            PHONENUMBER_MCC
-        } = await import("@whiskeysockets/baileys");
-
-        if (fs.existsSync(sessionDir)) fs.removeSync(sessionDir);
-        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
         const { version } = await fetchLatestBaileysVersion();
 
-        const sock = makeWASocket({
-            version,
-            auth: {
-                creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" })),
-            },
-            printQRInTerminal: false,
-            logger: pino({ level: "fatal" }),
-            // 💻 CONFIG MAC OS SAFARI (Comme demandé)
-            browser: ['Mac OS', 'Safari', '10.15.7'],
-            syncFullHistory: false,
-            markOnlineOnConnect: true, // Force le statut en ligne pour réveiller la notif
-        });
+        const startSocket = async () => {
+            const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
 
-        // Gestion de la session en arrière-plan
-        sock.ev.on('creds.update', saveCreds);
+            const sock = makeWASocket({
+                version,
+                auth: {
+                    creds: state.creds,
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent" })),
+                },
+                printQRInTerminal: false,
+                logger: pino({ level: "silent" }),
+                // 💻 TA CONFIGURATION DEMANDÉE
+                browser: ['Mac OS', 'Safari', '10.15.7'],
+                syncFullHistory: false,
+                connectTimeoutMs: 60000,
+                defaultQueryTimeoutMs: 0,
+                keepAliveIntervalMs: 10000,
+            });
 
-        sock.ev.on('connection.update', async (s) => {
-            if (s.connection === "open") {
-                await delay(5000);
+            // --- GÉNÉRATION DU CODE PAIRING ---
+            if (!codeSent && !sock.authState.creds.registered) {
+                await delay(5000); // Laisse le socket se stabiliser
                 try {
-                    const credsData = fs.readFileSync(`${sessionDir}/creds.json`, 'utf-8');
-                    const params = new URLSearchParams({
-                        api_dev_key: PASTE_KEY,
-                        api_option: 'paste',
-                        api_paste_code: credsData,
-                        api_paste_private: '1',
-                        api_paste_expire_date: '1D'
-                    });
-                    const pasteRes = await axios.post('https://pastebin.com/api_post', params);
-                    const pasteId = pasteRes.data.split('/').pop();
-                    const sessionID = "HYE~" + Buffer.from(pasteId).toString('base64');
-
-                    await sock.sendMessage(targetNumber + '@s.whatsapp.net', { 
-                        image: { url: "https://files.catbox.moe/szt37y.jpg" },
-                        caption: `🚀 *ⲎⲨⲂꞄⲒⲆⲈ-ⲘⲆ CONNECTÉ*\n\n*ID:* \`${sessionID}\`` 
-                    });
-                } catch (e) { console.error("Erreur finalisation"); }
-                if (fs.existsSync(sessionDir)) fs.removeSync(sessionDir);
+                    const code = await sock.requestPairingCode(targetNumber);
+                    const formattedCode = code?.match(/.{1,4}/g)?.join("-") || code;
+                    codeSent = true;
+                    if (!res.headersSent) res.send({ code: formattedCode });
+                } catch (e) {
+                    console.error("Erreur Pairing:", e.message);
+                    if (!res.headersSent) res.status(500).send({ error: "WhatsApp a refusé la requête." });
+                }
             }
-        });
 
-        // 🔥 LE SECRET : On attend que le socket soit "LÉGITIME" avant de demander
-        await delay(5000); 
-        
-        if (!sock.authState.creds.registered) {
-            // On vérifie si l'indicatif pays est correct (ex: 223 pour le Mali)
-            const code = await sock.requestPairingCode(targetNumber);
-            
-            // On sauvegarde l'état immédiatement pour que WhatsApp "voit" le serveur prêt
-            await saveCreds(); 
+            sock.ev.on('creds.update', saveCreds);
 
-            if (!res.headersSent) {
-                // On renvoie le code formaté : XXXX-XXXX
-                const finalCode = code?.match(/.{1,4}/g)?.join("-") || code;
-                return res.status(200).json({ code: finalCode });
-            }
-        }
+            sock.ev.on('connection.update', async (update) => {
+                const { connection, lastDisconnect } = update;
 
-    } catch (err) {
-        console.error("ERREUR WHATSAPP:", err);
-        if (!res.headersSent) res.status(500).json({ error: "WhatsApp bloque la requête." });
+                if (connection === 'close') {
+                    const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
+                    if (shouldReconnect && !sessionGenerated) {
+                        console.log("🔄 Reconnexion en cours...");
+                        await delay(5000);
+                        startSocket();
+                    }
+                }
+
+                if (connection === 'open') {
+                    if (sessionGenerated) return;
+                    sessionGenerated = true;
+                    
+                    await delay(8000); // Synchro des clés avant l'export
+
+                    try {
+                        // On récupère les creds.json complets
+                        const credsData = fs.readFileSync(path.join(sessionDir, 'creds.json'), 'utf-8');
+                        
+                        const params = new URLSearchParams();
+                        params.append('api_dev_key', "Nl_9mAGsEssqcDevULF4FItMAasK5gQb");
+                        params.append('api_option', 'paste');
+                        params.append('api_paste_code', credsData);
+                        params.append('api_paste_private', '1');
+                        params.append('api_paste_expire_date', '1D');
+
+                        const pasteRes = await axios.post('https://pastebin.com/api_post', params);
+                        
+                        if (pasteRes.data && pasteRes.data.includes('pastebin.com')) {
+                            const pasteId = pasteRes.data.split('/').pop();
+                            const sessionID = "HYE~" + Buffer.from(pasteId).toString('base64');
+                            
+                            lastSessionID = sessionID; 
+
+                            // Envoi du message de succès au numéro
+                            await sock.sendMessage(targetNumber + '@s.whatsapp.net', { 
+                                image: { url: "https://files.catbox.moe/szt37y.jpg" },
+                                caption: `🚀 *ⲎⲨⲂꞄⲒⲆⲈ-ⲘⲆ CONNECTÉ*\n\n*SESSION ID :*\n\`${sessionID}\`\n\n_Copie cet ID dans tes variables de déploiement._` 
+                            });
+                            
+                            console.log("✅ Session réussie pour " + targetNumber);
+                        }
+                    } catch (e) {
+                        console.error("❌ Erreur Pastebin/Envoi :", e.message);
+                    }
+                    
+                    // Nettoyage après succès
+                    setTimeout(() => {
+                        sock.ws.close();
+                        fs.removeSync(sessionDir);
+                    }, 10000);
+                }
+            });
+        };
+
+        startSocket();
+
+    } catch (globalError) {
+        if (!res.headersSent) res.status(500).send({ error: "Erreur serveur globale" });
     }
-};
+});
+
+app.listen(PORT, () => console.log(`🚀 SERVEUR HYBRIDE DÉMARRÉ SUR PORT ${PORT}`));
