@@ -6,62 +6,16 @@
     <title>HYBRIDE-MD | PAIRING</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            background-color: #0b0b1a;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            width: 100vw;
-        }
-        .main-card {
-            background: #16162d;
-            border-radius: 24px;
-            width: 92%;
-            max-width: 400px;
-            padding: 32px;
-            border: 1px solid #2a2a4a;
-        }
-        .logo-circle {
-            width: 85px;
-            height: 85px;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 0 25px rgba(106, 17, 203, 0.4);
-        }
-        .input-phone {
-            background: #1f1f3a;
-            border: 1px solid #33334d;
-            border-radius: 14px;
-            padding: 16px 16px 16px 48px;
-            color: white;
-            width: 100%;
-            outline: none;
-        }
-        .btn-generate {
-            background: linear-gradient(90deg, #7b2ff7, #2d165f);
-            border-radius: 14px;
-            padding: 16px;
-            width: 100%;
-            font-weight: 700;
-            transition: 0.3s;
-        }
-        .code-display {
-            background: #0b0b1a;
-            border: 2px dashed #7b2ff7;
-            border-radius: 14px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
+        body { background-color: #0b0b1a; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .main-card { background: #16162d; border-radius: 24px; width: 92%; max-width: 400px; padding: 32px; border: 1px solid #2a2a4a; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .logo-circle { width: 80px; height: 80px; background: linear-gradient(135deg, #7b2ff7, #2575fc); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 0 20px rgba(123, 47, 247, 0.4); }
+        .input-phone { background: #1f1f3a; border: 1px solid #33334d; border-radius: 14px; padding: 16px 16px 16px 48px; color: white; width: 100%; outline: none; transition: 0.3s; }
+        .input-phone:focus { border-color: #7b2ff7; box-shadow: 0 0 10px rgba(123, 47, 247, 0.2); }
+        .btn-generate { background: linear-gradient(90deg, #7b2ff7, #2d165f); border-radius: 14px; padding: 16px; width: 100%; font-weight: 700; transition: 0.3s; cursor: pointer; border: none; }
+        .btn-generate:hover { transform: translateY(-2px); opacity: 0.9; }
+        .code-display { background: #0b0b1a; border: 2px dashed #7b2ff7; border-radius: 14px; padding: 20px; margin-top: 20px; text-align: center; position: relative; }
     </style>
 </head>
 <body>
@@ -69,63 +23,56 @@
     <div class="main-card">
         <div class="logo-circle">⚡</div>
         
-        <div class="text-center mb-8">
+        <div class="text-center mb-6">
             <h1 class="text-3xl font-extrabold text-white mb-1">HYBRIDE-MD</h1>
-            <p class="text-gray-400 text-sm">Generate Your Pairing Code</p>
+            <p class="text-gray-400 text-sm italic">"The Future of Automation"</p>
         </div>
 
-        <div class="bg-blue-600/10 border border-blue-500/30 rounded-2xl p-5 mb-8">
-            <div class="flex gap-3">
-                <span class="text-blue-500 font-bold">ⓘ</span>
-                <p class="text-[12px] text-gray-300 leading-relaxed">
-                    <b>Quick Setup:</b> Entrez votre numéro avec l'indicatif pour recevoir votre code. Pas de déploiement requis !
-                </p>
-            </div>
+        <div class="bg-blue-600/10 border border-blue-500/30 rounded-2xl p-4 mb-6">
+            <p class="text-[11px] text-gray-300 text-center">
+                Entrez votre numéro avec l'indicatif (ex: 223...). Le code de session sera envoyé dans votre <b>discu privée</b>.
+            </p>
         </div>
 
-        <div class="mb-6">
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-2 ml-1">WhatsApp Number</label>
-            <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl">📞</span>
-                <input type="text" id="num" class="input-phone" placeholder="22396064449">
-            </div>
+        <div class="mb-6 relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><i class="fas fa-phone"></i></span>
+            <input type="text" id="num" class="input-phone" placeholder="223XXXXXXXX">
         </div>
 
-        <button onclick="getPair()" id="btn" class="btn-generate text-white uppercase tracking-wider">
-            Generate Pair Code
+        <button onclick="getPair()" id="btn" class="btn-generate text-white uppercase tracking-wider flex items-center justify-center gap-2">
+            <span>Generate Pair Code</span>
         </button>
 
-        <div id="loader" class="hidden mt-6 text-center text-blue-400 text-xs animate-pulse">
-            CONNEXION AU SERVEUR...
+        <div id="loader" class="hidden mt-4 text-center text-blue-400 text-[10px] animate-pulse font-bold">
+            <i class="fas fa-spinner fa-spin mr-2"></i>CONNEXION AU SERVEUR...
         </div>
 
         <div id="result" class="hidden code-display">
             <p class="text-[10px] text-gray-500 mb-2 uppercase">Votre Code de Pairing</p>
-            <div id="code" class="text-4xl font-black text-white tracking-[6px]"></div>
+            <div class="flex items-center justify-center gap-4">
+                <div id="code" class="text-3xl font-black text-white tracking-[6px]"></div>
+                <button onclick="copyCode()" class="text-blue-500 hover:text-white transition">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
         </div>
 
-        <div id="error" class="hidden mt-4 p-3 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-[11px] text-center">
-            Erreur Core : Vérifiez votre fichier package.json
-        </div>
-
-        <div class="text-center mt-10 text-[10px] text-gray-600 uppercase font-bold tracking-widest">
-            © 2026 HYBRIDE-MD | Powered by Wicked
+        <div class="text-center mt-8 text-[9px] text-gray-600 uppercase font-bold tracking-widest">
+            © 2026 HYBRIDE-MD | BY WICKED
         </div>
     </div>
 
     <script>
         async function getPair() {
             const n = document.getElementById('num').value;
-            if(!n) return alert("Numéro !");
+            if(!n) return alert("Veuillez entrer un numéro !");
             
             const btn = document.getElementById('btn');
             const loader = document.getElementById('loader');
             const result = document.getElementById('result');
-            const error = document.getElementById('error');
 
             btn.disabled = true;
             loader.classList.remove('hidden');
-            error.classList.add('hidden');
             result.classList.add('hidden');
 
             try {
@@ -138,12 +85,18 @@
                 if(data.code) {
                     result.classList.remove('hidden');
                     document.getElementById('code').innerText = data.code;
-                } else { throw new Error(); }
+                }
             } catch(e) {
                 loader.classList.add('hidden');
                 btn.disabled = false;
-                error.classList.remove('hidden');
+                alert("Erreur de connexion");
             }
+        }
+
+        function copyCode() {
+            const c = document.getElementById('code').innerText;
+            navigator.clipboard.writeText(c);
+            alert("Code copié ! Allez sur WhatsApp pour le lier.");
         }
     </script>
 </body>
