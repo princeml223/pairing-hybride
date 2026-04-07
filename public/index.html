@@ -3,100 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HYBRIDE-MD | PAIRING</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>HYBRIDE-MD | CONNECT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0b0b1a; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .main-card { background: #16162d; border-radius: 24px; width: 92%; max-width: 400px; padding: 32px; border: 1px solid #2a2a4a; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .logo-circle { width: 80px; height: 80px; background: linear-gradient(135deg, #7b2ff7, #2575fc); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 0 20px rgba(123, 47, 247, 0.4); }
-        .input-phone { background: #1f1f3a; border: 1px solid #33334d; border-radius: 14px; padding: 16px 16px 16px 48px; color: white; width: 100%; outline: none; transition: 0.3s; }
-        .input-phone:focus { border-color: #7b2ff7; box-shadow: 0 0 10px rgba(123, 47, 247, 0.2); }
-        .btn-generate { background: linear-gradient(90deg, #7b2ff7, #2d165f); border-radius: 14px; padding: 16px; width: 100%; font-weight: 700; transition: 0.3s; cursor: pointer; border: none; }
-        .btn-generate:hover { transform: translateY(-2px); opacity: 0.9; }
-        .code-display { background: #0b0b1a; border: 2px dashed #7b2ff7; border-radius: 14px; padding: 20px; margin-top: 20px; text-align: center; position: relative; }
+        body { background-color: #0b0b1a; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: white; }
+        .main-card { background: #16162d; border-radius: 24px; width: 92%; max-width: 400px; padding: 30px; border: 1px solid #2a2a4a; box-shadow: 0 0 40px rgba(0,0,0,0.6); position: relative; }
+        .logo-circle { width: 70px; height: 70px; background: linear-gradient(135deg, #7b2ff7, #2575fc); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 0 20px rgba(123, 47, 247, 0.4); }
+        .tab-btn { flex: 1; padding: 10px; font-size: 11px; font-weight: 800; border-radius: 10px; transition: 0.3s; color: #666; }
+        .tab-btn.active { background: #1f1f3a; color: #7b2ff7; border: 1px solid #7b2ff7; }
+        .input-phone { background: #1f1f3a; border: 1px solid #33334d; border-radius: 12px; padding: 15px; width: 100%; color: white; outline: none; text-align: center; }
+        .btn-gen { background: linear-gradient(90deg, #7b2ff7, #2d165f); border-radius: 12px; padding: 15px; width: 100%; font-weight: 700; cursor: pointer; border: none; color: white; transition: 0.3s; }
+        .qr-container { background: white; padding: 10px; border-radius: 15px; display: inline-block; }
+        .info-btn { position: absolute; top: 20px; right: 20px; color: #7b2ff7; cursor: pointer; font-size: 18px; }
+        .license-text { font-size: 9px; color: #444; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; text-align: center; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <div class="main-card">
+        <div class="info-btn" onclick="toggleInfo()"><i class="fas fa-info-circle"></i></div>
         <div class="logo-circle">⚡</div>
         
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-extrabold text-white mb-1">HYBRIDE-MD</h1>
-            <p class="text-gray-400 text-sm italic">"The Future of Automation"</p>
-        </div>
-
-        <div class="bg-blue-600/10 border border-blue-500/30 rounded-2xl p-4 mb-6">
-            <p class="text-[11px] text-gray-300 text-center">
-                Entrez votre numéro avec l'indicatif (ex: 223...). Le code de session sera envoyé dans votre <b>discu privée</b>.
-            </p>
-        </div>
-
-        <div class="mb-6 relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><i class="fas fa-phone"></i></span>
-            <input type="text" id="num" class="input-phone" placeholder="223XXXXXXXX">
-        </div>
-
-        <button onclick="getPair()" id="btn" class="btn-generate text-white uppercase tracking-wider flex items-center justify-center gap-2">
-            <span>Generate Pair Code</span>
-        </button>
-
-        <div id="loader" class="hidden mt-4 text-center text-blue-400 text-[10px] animate-pulse font-bold">
-            <i class="fas fa-spinner fa-spin mr-2"></i>CONNEXION AU SERVEUR...
-        </div>
-
-        <div id="result" class="hidden code-display">
-            <p class="text-[10px] text-gray-500 mb-2 uppercase">Votre Code de Pairing</p>
-            <div class="flex items-center justify-center gap-4">
-                <div id="code" class="text-3xl font-black text-white tracking-[6px]"></div>
-                <button onclick="copyCode()" class="text-blue-500 hover:text-white transition">
-                    <i class="fas fa-copy"></i>
-                </button>
+            <h1 class="text-2xl font-black italic">HYBRIDE-MD</h1>
+            <div class="flex gap-2 mt-4 bg-[#0b0b1a] p-1 rounded-xl">
+                <button onclick="switchTab('pair')" id="tab-pair" class="tab-btn active">PAIRING CODE</button>
+                <button onclick="switchTab('qr')" id="tab-qr" class="tab-btn">QR CODE</button>
             </div>
         </div>
 
-        <div class="text-center mt-8 text-[9px] text-gray-600 uppercase font-bold tracking-widest">
-            © 2026 HYBRIDE-MD | BY WICKED
+        <div id="view-pair">
+            <div class="mb-4">
+                <input type="text" id="num" class="input-phone" placeholder="223XXXXXXXX">
+            </div>
+            <button onclick="getPair()" id="btn-pair" class="btn-gen uppercase tracking-tighter">Generate Pairing Code</button>
+        </div>
+
+        <div id="view-qr" class="hidden text-center">
+            <div id="qr-box" class="qr-container mb-4">
+                <p class="text-black text-[10px] font-bold p-4">Chargement du QR...</p>
+            </div>
+            <p class="text-[10px] text-gray-500">Ouvrez WhatsApp > Appareils connectés > Lier un appareil</p>
+        </div>
+
+        <div id="loader" class="hidden mt-4 text-center text-blue-500 text-[10px] animate-pulse font-bold uppercase">Connexion au Core...</div>
+
+        <div id="result" class="hidden mt-6 p-4 border-2 border-dashed border-blue-500 rounded-xl text-center bg-[#0b0b1a]">
+            <p class="text-[9px] text-gray-500 mb-2 uppercase font-bold">Votre Code de Pairing</p>
+            <div class="flex items-center justify-center gap-4">
+                <span id="code" class="text-3xl font-black tracking-[4px]"></span>
+                <button onclick="copyCode()" class="text-blue-500"><i class="fas fa-copy"></i></button>
+            </div>
+        </div>
+
+        <div class="license-text">
+            © 2026 Hybride-MD License<br>
+            MIT Licensed • Powered by Wicked & Luffy<br>
+            <span class="text-gray-600">All Rights Reserved</span>
         </div>
     </div>
 
+    <div id="modal-info" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+        <div class="bg-[#16162d] p-6 rounded-3xl border border-[#7b2ff7] max-w-sm text-center">
+            <h2 class="text-blue-500 font-bold mb-3 uppercase">Comment ça marche ?</h2>
+            <p class="text-[11px] text-gray-300 leading-relaxed mb-4">
+                1. Choisissez <b>Pairing Code</b> ou <b>QR Code</b>.<br>
+                2. Si Pairing, entrez votre numéro avec l'indicatif.<br>
+                3. Une fois connecté, le bot vous enverra votre <b>Session ID</b> directement dans votre discussion personnelle sur WhatsApp.
+            </p>
+            <button onclick="toggleInfo()" class="text-xs bg-gray-800 px-4 py-2 rounded-lg font-bold">FERMER</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
+        function switchTab(mode) {
+            document.getElementById('view-pair').classList.toggle('hidden', mode === 'qr');
+            document.getElementById('view-qr').classList.toggle('hidden', mode === 'pair');
+            document.getElementById('tab-pair').classList.toggle('active', mode === 'pair');
+            document.getElementById('tab-qr').classList.toggle('active', mode === 'qr');
+            if(mode === 'qr') getQR();
+        }
+
         async function getPair() {
             const n = document.getElementById('num').value;
-            if(!n) return alert("Veuillez entrer un numéro !");
-            
-            const btn = document.getElementById('btn');
-            const loader = document.getElementById('loader');
-            const result = document.getElementById('result');
-
-            btn.disabled = true;
-            loader.classList.remove('hidden');
-            result.classList.add('hidden');
-
+            if(!n) return alert("Numéro requis !");
+            document.getElementById('loader').classList.remove('hidden');
             try {
                 const res = await fetch(`/api/generate?number=${n}`);
                 const data = await res.json();
-                
-                loader.classList.add('hidden');
-                btn.disabled = false;
-
                 if(data.code) {
-                    result.classList.remove('hidden');
                     document.getElementById('code').innerText = data.code;
+                    document.getElementById('result').classList.remove('hidden');
                 }
-            } catch(e) {
-                loader.classList.add('hidden');
-                btn.disabled = false;
-                alert("Erreur de connexion");
-            }
+            } catch(e) { alert("Erreur Serveur"); }
+            document.getElementById('loader').classList.add('hidden');
+        }
+
+        async function getQR() {
+            document.getElementById('qr-box').innerHTML = '<p class="text-black text-[10px] p-4">Chargement...</p>';
+            try {
+                const res = await fetch(`/api/generate`);
+                const data = await res.json();
+                if(data.qr) {
+                    document.getElementById('qr-box').innerHTML = "";
+                    new QRCode(document.getElementById('qr-box'), { text: data.qr, width: 140, height: 140 });
+                }
+            } catch(e) { console.log(e); }
         }
 
         function copyCode() {
-            const c = document.getElementById('code').innerText;
-            navigator.clipboard.writeText(c);
-            alert("Code copié ! Allez sur WhatsApp pour le lier.");
+            navigator.clipboard.writeText(document.getElementById('code').innerText);
+            alert("Code copié !");
+        }
+
+        function toggleInfo() {
+            document.getElementById('modal-info').classList.toggle('hidden');
         }
     </script>
 </body>
