@@ -3,76 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HYBRIDE-MD | CONNECT</title>
+    <title>HYBRIDE-MD | PAIRING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0b0b1a; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: white; }
-        .main-card { background: #16162d; border-radius: 24px; width: 92%; max-width: 400px; padding: 30px; border: 1px solid #2a2a4a; box-shadow: 0 0 40px rgba(0,0,0,0.6); position: relative; }
-        .logo-circle { width: 70px; height: 70px; background: linear-gradient(135deg, #7b2ff7, #2575fc); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 0 20px rgba(123, 47, 247, 0.4); }
-        .tab-btn { flex: 1; padding: 10px; font-size: 11px; font-weight: 800; border-radius: 10px; transition: 0.3s; color: #666; }
+        body { background-color: #0b0b1a; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: white; overflow-x: hidden; }
+        .main-card { background: #16162d; border-radius: 28px; width: 92%; max-width: 420px; padding: 40px; border: 1px solid #2a2a4a; box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; }
+        .logo-circle { width: 75px; height: 75px; background: linear-gradient(135deg, #7b2ff7, #2575fc); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 0 25px rgba(123, 47, 247, 0.4); }
+        .input-phone { background: #1f1f3a; border: 1px solid #33334d; border-radius: 15px; padding: 18px; width: 100%; color: white; outline: none; text-align: center; font-weight: 600; }
+        .btn-gen { background: linear-gradient(90deg, #7b2ff7, #2d165f); border-radius: 15px; padding: 18px; width: 100%; font-weight: 800; cursor: pointer; border: none; color: white; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-gen:hover { opacity: 0.9; transform: translateY(-2px); }
+        .qr-container { background: white; padding: 15px; border-radius: 20px; display: inline-block; margin: 0 auto; min-height: 150px; position: relative; }
+        .tab-btn { flex: 1; padding: 12px; font-size: 10px; font-weight: 900; border-radius: 12px; transition: 0.3s; color: #555; text-transform: uppercase; letter-spacing: 1px; }
         .tab-btn.active { background: #1f1f3a; color: #7b2ff7; border: 1px solid #7b2ff7; }
-        .input-phone { background: #1f1f3a; border: 1px solid #33334d; border-radius: 12px; padding: 15px; width: 100%; color: white; outline: none; text-align: center; }
-        .btn-gen { background: linear-gradient(90deg, #7b2ff7, #2d165f); border-radius: 12px; padding: 15px; width: 100%; font-weight: 700; cursor: pointer; border: none; color: white; transition: 0.3s; }
-        .qr-container { background: white; padding: 10px; border-radius: 15px; display: inline-block; }
-        .info-btn { position: absolute; top: 20px; right: 20px; color: #7b2ff7; cursor: pointer; font-size: 18px; }
-        .license-text { font-size: 9px; color: #444; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; text-align: center; line-height: 1.5; }
+        .info-btn { position: absolute; top: 25px; right: 25px; color: #7b2ff7; cursor: pointer; font-size: 18px; }
+        .info-btn:hover { color: white; transform: scale(1.1); transition: 0.3s; }
+        .license-box { font-size: 9px; color: #333; text-transform: uppercase; margin-top: 30px; text-align: center; font-weight: 700; letter-spacing: 1px; border-top: 1px solid #222; padding-top: 20px; }
+        .pairing-result-box { background: #0b0b1a; border: 2px dashed #7b2ff7; border-radius: 15px; padding: 20px; margin-top: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="main-card">
-        <div class="info-btn" onclick="toggleInfo()"><i class="fas fa-info-circle"></i></div>
+        <div class="info-btn" onclick="toggleInfo()"><i class="fas fa-question-circle"></i></div>
         <div class="logo-circle">⚡</div>
         
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-black italic">HYBRIDE-MD</h1>
-            <div class="flex gap-2 mt-4 bg-[#0b0b1a] p-1 rounded-xl">
-                <button onclick="switchTab('pair')" id="tab-pair" class="tab-btn active">PAIRING CODE</button>
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold italic tracking-tighter text-white mb-2">HYBRIDE-MD</h1>
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <input type="checkbox" id="custom-session" class="w-4 h-4 rounded bg-[#1f1f3a] border-slate-700 checked:bg-purple-600 checked:border-purple-600 focus:ring-0 focus:ring-offset-0 focus:border-0 outline-none">
+                <label for="custom-session" class="text-[12px] font-medium text-gray-300">Use a custom session</label>
+            </div>
+            <div class="flex gap-3 bg-[#0b0b1a] p-1.5 rounded-2xl">
+                <button onclick="switchTab('pair')" id="tab-pair" class="tab-btn active">PAIRING</button>
                 <button onclick="switchTab('qr')" id="tab-qr" class="tab-btn">QR CODE</button>
             </div>
         </div>
 
-        <div id="view-pair">
-            <div class="mb-4">
-                <input type="text" id="num" class="input-phone" placeholder="223XXXXXXXX">
-            </div>
-            <button onclick="getPair()" id="btn-pair" class="btn-gen uppercase tracking-tighter">Generate Pairing Code</button>
+        <div id="view-pair" class="space-y-4">
+            <input type="text" id="num" class="input-phone" placeholder="223XXXXXXXX">
+            <button onclick="getPair()" id="btn-pair" class="btn-gen flex items-center justify-center gap-2">
+                <i class="fas fa-key"></i> Obtenir le code
+            </button>
         </div>
 
         <div id="view-qr" class="hidden text-center">
-            <div id="qr-box" class="qr-container mb-4">
-                <p class="text-black text-[10px] font-bold p-4">Chargement du QR...</p>
+            <div id="qr-box" class="qr-container flex items-center justify-center">
+                <p class="text-black text-[10px] font-bold p-4">CHARGEMENT DU QR...</p>
             </div>
-            <p class="text-[10px] text-gray-500">Ouvrez WhatsApp > Appareils connectés > Lier un appareil</p>
+            <p class="text-[10px] text-gray-500 mt-4">Scannez via WhatsApp > Appareils connectés</p>
         </div>
 
-        <div id="loader" class="hidden mt-4 text-center text-blue-500 text-[10px] animate-pulse font-bold uppercase">Connexion au Core...</div>
+        <div id="loader" class="hidden mt-6 text-center text-blue-500 text-[10px] animate-pulse font-bold uppercase">Connexion au Core...</div>
 
-        <div id="result" class="hidden mt-6 p-4 border-2 border-dashed border-blue-500 rounded-xl text-center bg-[#0b0b1a]">
-            <p class="text-[9px] text-gray-500 mb-2 uppercase font-bold">Votre Code de Pairing</p>
+        <div id="result" class="hidden pairing-result-box">
+            <p class="text-[9px] text-gray-500 mb-2 uppercase font-black">Code de Pairing</p>
             <div class="flex items-center justify-center gap-4">
-                <span id="code" class="text-3xl font-black tracking-[4px]"></span>
-                <button onclick="copyCode()" class="text-blue-500"><i class="fas fa-copy"></i></button>
+                <span id="code" class="text-4xl font-black tracking-[6px] text-white"></span>
+                <button onclick="copyCode()" class="text-purple-500 hover:text-white transition"><i class="fas fa-copy text-2xl"></i></button>
             </div>
         </div>
 
-        <div class="license-text">
-            © 2026 Hybride-MD License<br>
-            MIT Licensed • Powered by Wicked & Luffy<br>
-            <span class="text-gray-600">All Rights Reserved</span>
+        <div class="license-box">
+            © 2026 HYBRIDE-MD LICENSE<br>
+            MIT LICENSED • DEVELOPED BY WICKED<br>
+            <span class="text-gray-600">All Rights Reserved • Secure Session System</span>
         </div>
     </div>
 
-    <div id="modal-info" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-        <div class="bg-[#16162d] p-6 rounded-3xl border border-[#7b2ff7] max-w-sm text-center">
-            <h2 class="text-blue-500 font-bold mb-3 uppercase">Comment ça marche ?</h2>
-            <p class="text-[11px] text-gray-300 leading-relaxed mb-4">
-                1. Choisissez <b>Pairing Code</b> ou <b>QR Code</b>.<br>
-                2. Si Pairing, entrez votre numéro avec l'indicatif.<br>
-                3. Une fois connecté, le bot vous enverra votre <b>Session ID</b> directement dans votre discussion personnelle sur WhatsApp.
+    <div id="modal-info" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-8 z-50">
+        <div class="bg-[#16162d] p-8 rounded-[30px] border border-purple-500 max-w-sm w-full text-center">
+            <i class="fas fa-shield-alt text-4xl text-purple-500 mb-4"></i>
+            <h2 class="text-white font-black mb-4 uppercase text-lg">Comment se connecter ?</h2>
+            <p class="text-[11px] text-gray-400 leading-relaxed mb-6">
+                1. Entre ton numéro avec l'indicatif pays.<br>
+                2. Copie le code de 8 chiffres reçu.<br>
+                3. Colle-le dans ta notification WhatsApp.<br>
+                4. Ton <b>Session ID</b> te sera envoyé en message privé.
             </p>
-            <button onclick="toggleInfo()" class="text-xs bg-gray-800 px-4 py-2 rounded-lg font-bold">FERMER</button>
+            <button onclick="toggleInfo()" class="bg-purple-600 px-8 py-3 rounded-xl font-bold text-xs uppercase text-white hover:bg-purple-500">Compris</button>
         </div>
     </div>
 
@@ -88,34 +98,54 @@
 
         async function getPair() {
             const n = document.getElementById('num').value;
-            if(!n) return alert("Numéro requis !");
-            document.getElementById('loader').classList.remove('hidden');
+            if(!n) return alert("Veuillez entrer un numéro !");
+            const btn = document.getElementById('btn-pair');
+            const loader = document.getElementById('loader');
+            const result = document.getElementById('result');
+            const isCustom = document.getElementById('custom-session').checked;
+
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            result.classList.add('hidden');
+
             try {
-                const res = await fetch(`/api/generate?number=${n}`);
+                const res = await fetch(`/api/generate?number=${n}&custom=${isCustom}`);
                 const data = await res.json();
+                
+                loader.classList.add('hidden');
+                btn.disabled = false;
+
                 if(data.code) {
                     document.getElementById('code').innerText = data.code;
-                    document.getElementById('result').classList.remove('hidden');
+                    result.classList.remove('hidden');
+                } else if(data.error) {
+                    alert(data.error);
                 }
-            } catch(e) { alert("Erreur Serveur"); }
-            document.getElementById('loader').classList.add('hidden');
+            } catch(e) {
+                loader.classList.add('hidden');
+                btn.disabled = false;
+                alert("Erreur serveur, réessayez plus tard.");
+            }
         }
 
         async function getQR() {
-            document.getElementById('qr-box').innerHTML = '<p class="text-black text-[10px] p-4">Chargement...</p>';
+            document.getElementById('qr-box').innerHTML = '<p class="text-black text-[10px] p-4 font-bold">CHARGEMENT DU QR...</p>';
             try {
                 const res = await fetch(`/api/generate`);
                 const data = await res.json();
                 if(data.qr) {
                     document.getElementById('qr-box').innerHTML = "";
-                    new QRCode(document.getElementById('qr-box'), { text: data.qr, width: 140, height: 140 });
+                    new QRCode(document.getElementById('qr-box'), { text: data.qr, width: 150, height: 150 });
+                } else if(data.error) {
+                    alert(data.error);
                 }
-            } catch(e) { console.log(e); }
+            } catch(e) { console.error(e); }
         }
 
         function copyCode() {
-            navigator.clipboard.writeText(document.getElementById('code').innerText);
-            alert("Code copié !");
+            const c = document.getElementById('code').innerText;
+            navigator.clipboard.writeText(c);
+            alert("Code copié ! Collez-le dans votre notification WhatsApp.");
         }
 
         function toggleInfo() {
